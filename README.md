@@ -14,7 +14,7 @@ npm install --save @eyevinn/iaf-plugin-encore
 To use the Encore upload module in your Eyevinn IAF setup, your `index.ts` should look like this:
 ```TypeScript
 // other imports
-import {EncoreUploadModule} from "@eyevinn/iaf-plugin-encore";
+import {EncoreUploadModule} from "@eyevinn/iaf-plugin-encore-local";
 
 const encoreUploader = new EncoreUploadModule(/** args **/);
 const fileWatcher = /** initialize your file watcher of choice**/

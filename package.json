@@ -16,7 +16,7 @@
   "author": "Eyevinn Technology <work@eyevinn.se>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Eyevinn/iaf-plugin-encore.git"
+    "url": "git+https://github.com/Eyevinn/iaf-plugin-encore-local.git"
   },
   "keywords": [
     "encore",
