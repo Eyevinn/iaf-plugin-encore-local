@@ -1,6 +1,6 @@
 {
   "externalId": "any-string",
-  "profile": "x264-animated",
+  "profile": "program.yml",
   "outputFolder": "/an/output/path/dir",
   "baseName": "any_file",
   "progressCallbackUri": "http://projectx/encorecallback",
