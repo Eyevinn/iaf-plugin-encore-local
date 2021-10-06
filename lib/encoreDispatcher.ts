@@ -16,9 +16,12 @@ export class EncoreDispatcher implements TranscodeDispatcher {
     this.inputLocation = inputLocation;
     this.outputDestination = outputDestination;
     this.logger = logger;
-    this.encoreEndpoint = encoreEndpoint;
-    this.encodeParams = encodeParams;
-
+    if (encoreEndpoint.endsWith('/')) {
+      this.encoreEndpoint = encoreEndpoint.slice(0, -1);
+    } else {
+      this.encoreEndpoint = encoreEndpoint;
+    }
+    console.log(JSON.stringify(encodeParams))
     if (encodeParams) {
       this.encodeParams = JSON.parse(encodeParams);
     } else {
@@ -59,7 +62,7 @@ export class EncoreDispatcher implements TranscodeDispatcher {
 
   async createJobs(fileName: string): Promise<any> {
     this.logger.info('Creating job in Encore');
-    let config = JSON.parse(this.encodeParams);
+    let config = this.encodeParams;
     config["outputFolder"] = this.outputDestination;
     config["baseName"] = fileName;
     config.inputs = [{

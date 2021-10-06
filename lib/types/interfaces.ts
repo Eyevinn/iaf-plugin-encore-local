@@ -1,4 +1,4 @@
-import internal, { Readable } from "stream";
+import { Readable } from "stream";
 import winston from "winston";
 
 export interface IafUploadModule {
