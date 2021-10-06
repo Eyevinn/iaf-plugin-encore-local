@@ -1,0 +1,22 @@
+{
+  "externalId": "any-string",
+  "profile": "x264-animated",
+  "outputFolder": "/an/output/path/dir",
+  "baseName": "any_file",
+  "progressCallbackUri": "http://projectx/encorecallback",
+  "priority": 0,
+  "debugOverlay": false,
+  "logContext": {},
+  "seekTo": 60,
+  "duration": 60,
+  "thumbnailTime": 1800.5,
+  "inputs": [
+    {
+      "type": "AudioVideo",
+      "uri": "/path/to/file.mp4",
+      "params": {
+        "ac": "2"
+      }
+    }
+  ]
+}
