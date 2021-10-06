@@ -1,4 +1,4 @@
-# IAF Plugin Encore
+# IAF Plugin Encore-local
 
 The Eyevinn Ingest Application Framework (Eyevinn IAF) is a framework to simplify building VOD ingest applications. A framework of open source plugins to integrate with various transcoding and streaming providers. This is the plugin for interacting with the [SVT Encore video transcoding tool](https://github.com/svt/encore).
 
@@ -7,7 +7,7 @@ The Eyevinn Ingest Application Framework (Eyevinn IAF) is a framework to simplif
 To install the plugin in your project, run the following command.
 
 ```
-npm install --save @eyevinn/iaf-plugin-encore
+npm install --save @eyevinn/iaf-plugin-encore-local
 ```
 
 ## Using the module in your application based on Eyevinn IAF
