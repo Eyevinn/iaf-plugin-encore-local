@@ -21,7 +21,6 @@ export class EncoreDispatcher implements TranscodeDispatcher {
     } else {
       this.encoreEndpoint = encoreEndpoint;
     }
-    console.log(JSON.stringify(encodeParams))
     if (encodeParams) {
       this.encodeParams = JSON.parse(encodeParams);
     } else {
@@ -71,13 +70,7 @@ export class EncoreDispatcher implements TranscodeDispatcher {
     let config = this.encodeParams;
     config["outputFolder"] = this.outputDestination;
     config["baseName"] = fileName;
-    config.inputs = [{
-      "type": "AudioVideo",
-      "uri": `${this.inputLocation}/${fileName}`,
-      "params": {
-        "ac": "2"
-      }
-    }];
+    config.inputs[0]["uri"] = `${this.inputLocation}/${fileName}`;
     const url = `${this.encoreEndpoint}/encoreJobs`;
     try {
       const resp = await fetch(url, {
@@ -85,7 +78,7 @@ export class EncoreDispatcher implements TranscodeDispatcher {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: this.encodeParams
+        body: JSON.stringify(config)
       });
       return resp.json();
     } catch (err) {

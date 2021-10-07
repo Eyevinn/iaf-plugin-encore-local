@@ -1,6 +1,6 @@
 {
   "externalId": "any-string",
-  "profile": "program.yml",
+  "profile": "program",
   "outputFolder": "/an/output/path/dir",
   "baseName": "any_file",
   "progressCallbackUri": "http://projectx/encorecallback",
