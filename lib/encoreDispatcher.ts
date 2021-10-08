@@ -34,13 +34,13 @@ export class EncoreDispatcher implements TranscodeDispatcher {
   }
 
   async getJobs(page: number, size: number): Promise<any> {
-    this.logger.info('Fetching jobs from Encore');
+    this.logger.info("Fetching jobs from Encore");
     const url = `${this.encoreEndpoint}/encoreJobs?page=${page}&size=${size}`;
     try {
       const resp = await fetch(url, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         }
       });
       return resp.json();
@@ -50,13 +50,13 @@ export class EncoreDispatcher implements TranscodeDispatcher {
   }
 
   async getJob(jobId: string): Promise<any> {
-    this.logger.info('Fetching job from Encore');
+    this.logger.info(`Fetching job with id ${jobId} from Encore`);
     const url = `${this.encoreEndpoint}/encoreJobs/${jobId}`;
     try {
       const resp = await fetch(url, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         }
       });
       return resp.json();
@@ -66,7 +66,7 @@ export class EncoreDispatcher implements TranscodeDispatcher {
   }
 
   async createJobs(fileName: string): Promise<any> {
-    this.logger.info('Creating job in Encore');
+    this.logger.info("Creating job in Encore");
     let config = this.encodeParams;
     config["outputFolder"] = this.outputDestination;
     config["baseName"] = fileName;
@@ -74,9 +74,9 @@ export class EncoreDispatcher implements TranscodeDispatcher {
     const url = `${this.encoreEndpoint}/encoreJobs`;
     try {
       const resp = await fetch(url, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(config)
       });
