@@ -5,7 +5,7 @@
   "main": "./dist/EncoreUploadModule.js",
   "types": "./dist/types/EncoreUploadModule.d.ts",
   "scripts": {
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "build": "rm -rf dist/ && tsc",
     "postversion": "git push && git push --tags"
   },
