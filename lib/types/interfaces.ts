@@ -25,6 +25,7 @@ export interface TranscodeDispatcher {
   getJobs(page: number, size: number): Promise<any>;
   getJob(jobId: string): Promise<any>;
   createJobs(config: {}): Promise<any>;
+  monitorJobUntilComplete(jobId: string): Promise<any>;
 }
 
 export interface FileWatcher {

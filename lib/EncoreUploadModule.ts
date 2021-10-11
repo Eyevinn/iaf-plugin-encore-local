@@ -25,7 +25,9 @@ export class EncoreUploadModule implements IafUploadModule {
         this.logger.info(`File added: ${filePath}`);
         const fileName = path.basename(filePath);
         this.dispatcher.dispatch(fileName).then((result) => {
-            this.fileUploadedDelegate(result);
+            this.dispatcher.monitorJobUntilComplete(result.id).then((job) => {
+                this.fileUploadedDelegate(job);
+            });
         });
     }
 }

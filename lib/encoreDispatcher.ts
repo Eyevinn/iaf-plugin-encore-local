@@ -86,6 +86,54 @@ export class EncoreDispatcher implements TranscodeDispatcher {
     }
   }
 
+  async cancelJob(jobId: string): Promise<any> {
+    this.logger.info(`Cancelling job with id ${jobId}`);
+    const url = `${this.encoreEndpoint}/encoreJobs/${jobId}/cancel`;
+    try {
+      const resp = fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
+      return resp.json();
+    } catch (err) {
+      this.logger.error(err);
+    }
+  }
+
+  async monitorJobUntilComplete(jobId: string): Promise<any> {
+    const timeout = process.env.TIMEOUT ? parseInt(process.env.TIMEOUT) : 7400;
+    const timeoutAt = Date.now() + timeout * 1000;
+    let job = await this.getJob(jobId);
+
+    while(timeoutAt > Date.now()) {
+      if (job.status === "FAILED") {
+        this.logger.error(`Job with id ${jobId} failed`);
+        break;
+      }
+      if (job.status === "CANCELLED") {
+        this.logger.info(`Job with id ${jobId} was cancelled`);
+        break;
+      }
+      this.logger.info(`Job with id ${jobId} Progress: ${job.progress}`);
+      if (job.status === "COMPLETED" || job.progress === 100) {
+        this.logger.info(`Job with id ${jobId} completed`);
+        break;
+      }
+      await new Promise(resolve => setTimeout(resolve, 30000));
+      job = await this.getJob(jobId);
+    }
+    if (Date.now() > timeoutAt) {
+      this.logger.error(`Job with id ${jobId} timed out`);
+      if (process.env.CANCEL_ON_TIMEOUT) {
+        await this.cancelJob(jobId);
+        this.logger.error(`Job with id ${jobId} have been cancelled`);
+      }
+    }
+    return job;
+  }
+
   loadEncodeParams(templateFileName: string) {
     const encodeData = JSON.parse(fs.readFileSync(templateFileName, "utf-8"));
     return encodeData;
