@@ -3,6 +3,8 @@ import winston from "winston";
 
 export interface IafUploadModule {
   logger: winston.Logger;
+  outputFolder: string;
+  destination: string,
   onFileAdd(filePath: string, readStream: Readable): any;
   fileUploadedDelegate: Function;
 }

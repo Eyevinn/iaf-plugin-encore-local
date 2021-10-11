@@ -50,7 +50,7 @@ export class EncoreDispatcher implements TranscodeDispatcher {
   }
 
   async getJob(jobId: string): Promise<any> {
-    this.logger.info(`Fetching job with id ${jobId} from Encore`);
+    this.logger.info(`Fetching job with id ${jobId}`);
     const url = `${this.encoreEndpoint}/encoreJobs/${jobId}`;
     try {
       const resp = await fetch(url, {
@@ -66,7 +66,7 @@ export class EncoreDispatcher implements TranscodeDispatcher {
   }
 
   async createJobs(fileName: string): Promise<any> {
-    this.logger.info("Creating job in Encore");
+    this.logger.info(`Creating job in Encore for ${fileName}`);
     let config = this.encodeParams;
     config["outputFolder"] = this.outputDestination;
     config["baseName"] = fileName;
@@ -117,7 +117,7 @@ export class EncoreDispatcher implements TranscodeDispatcher {
         break;
       }
       this.logger.info(`Job with id ${jobId} Progress: ${job.progress}`);
-      if (job.status === "COMPLETED" || job.progress === 100) {
+      if (job.status === "COMPLETED" || job.status === "SUCCESSFUL") {
         this.logger.info(`Job with id ${jobId} completed`);
         break;
       }
