@@ -34,7 +34,7 @@ Creates a new `EncoreUploadModule` object. You need to provide the Encore endpoi
 
 `onFileAdd = (filePath: string, readStream: Readable)`.
 
-Method that is executed when a file is added to the directory being watched. `filePath` is the full path to the added file, and `readStream` is a `Readable` stream of the file data. Any file watcher plugins are *required* to provide these. The method dispatches a transcoding job to the Encore endpoint.
+Method that is executed when a file is added to the directory being watched. `filePath` is the full path to the added file, and `readStream` is a `Readable` stream of the file data. Any file watcher plugins are *required* to provide these. The method dispatches a transcoding job to the Encore endpoint. On job completion a SMIL-file will be generated in the `outputDestination` containing all transcoded video/audio files.
 
 ## `EncoreDispatcher`
 Sub-module that dispatches Encore transcoding jobs.
