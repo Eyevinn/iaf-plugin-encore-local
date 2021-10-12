@@ -7,7 +7,6 @@
   "priority": 0,
   "debugOverlay": false,
   "logContext": {},
-  "thumbnailTime": 1800.5,
   "inputs": [
     {
       "type": "AudioVideo",

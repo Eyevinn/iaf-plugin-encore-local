@@ -22,19 +22,15 @@ export function createSMILFile(dir: string, fileName: string): void {
   for (let i = 0; i < files.length; i++) {
     let file = files[i];
     if (file.includes("SURROUND")) {
-      //smil += `<audio src="${destination}/${file}" systemLanguage="eng" subtitleName="SURROUND"/>`;
-      continue;
+      smil += `<audio name="${file}" systemLanguage="eng" subtitleName="SURROUND"/>`;
     } else if (file.includes("STEREO")) {
-      //smil += `<audio src="${destination}/${file}" systemLanguage="eng" subtitleName="STEREO"/>`;
-      continue;
-    } else if ("mp4" === path.extname(file)) { 
-      smil += `<video src="${file}" systemLanguage="eng" audioName="English"/>`;
-    } else {
-      continue;
+      smil += `<audio name="${file}" systemLanguage="eng" subtitleName="STEREO"/>`;
+    } else if (!file.includes("thumb")) { 
+      smil += `<video name="${file}" systemLanguage="eng" audioName="English"/>`;
     }
   }
   smil += `</switch>`;
   smil += `</body>`;
   smil += `</smil>`;
-  fs.writeFileSync(path.join(dir, `${fileName}.smil`), smil);
+  fs.writeFileSync(path.join(dir, `${fileName}-config.smil`), smil);
 }
