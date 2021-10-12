@@ -8,14 +8,12 @@ import { Readable } from "stream";
 export class EncoreUploadModule implements IafUploadModule {
     logger: winston.Logger;
     dispatcher: EncoreDispatcher;
-    destination: string;
     outputFolder: string;
     fileUploadedDelegate: Function;
 
 
-    constructor(encoreEndpoint: string, ingestFolder: string, outputFolder: string, destination: string, encodeParams: string, logger: winston.Logger) {
+    constructor(encoreEndpoint: string, ingestFolder: string, outputFolder: string, encodeParams: string, logger: winston.Logger) {
         this.logger = logger;
-        this.destination = destination;
         this.outputFolder = outputFolder;
         this.dispatcher = new EncoreDispatcher(encoreEndpoint, ingestFolder, outputFolder, encodeParams, logger);
     }
@@ -33,7 +31,7 @@ export class EncoreUploadModule implements IafUploadModule {
         this.dispatcher.dispatch(fileName).then((result) => {
             this.dispatcher.monitorJobUntilComplete(result.id).then((job) => {
                 if (job) {
-                    createSMILFile(this.outputFolder, fileName, this.destination);
+                    createSMILFile(this.outputFolder, fileName);
                     this.fileUploadedDelegate(job);
                 } else {
                     this.logger.error(`Job ${result.id} failed to complete Encore job.`);

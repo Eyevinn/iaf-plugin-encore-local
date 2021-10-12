@@ -12,7 +12,7 @@ export function getFilesByName(dir: string, fileName: string): string[] {
   return files;
 }
 
-export function createSMILFile(dir: string, fileName: string, destination): void {
+export function createSMILFile(dir: string, fileName: string): void {
   let files: string[] = getFilesByName(dir, fileName);
   let smil  = `<?xml version="1.0" encoding="UTF-8"?>`;
   smil += `<smil>`;
@@ -22,11 +22,13 @@ export function createSMILFile(dir: string, fileName: string, destination): void
   for (let i = 0; i < files.length; i++) {
     let file = files[i];
     if (file.includes("SURROUND")) {
-      smil += `<audio src="${destination}/${file}" systemLanguage="eng" subtitleName="SURROUND"/>`;
+      //smil += `<audio src="${destination}/${file}" systemLanguage="eng" subtitleName="SURROUND"/>`;
+      continue;
     } else if (file.includes("STEREO")) {
-      smil += `<audio src="${destination}/${file}" systemLanguage="eng" subtitleName="STEREO"/>`;
+      //smil += `<audio src="${destination}/${file}" systemLanguage="eng" subtitleName="STEREO"/>`;
+      continue;
     } else if ("mp4" === path.extname(file)) { 
-      smil += `<video src="${destination}/${file}" systemLanguage="eng" audioName="English"/>`;
+      smil += `<video src="${file}" systemLanguage="eng" audioName="English"/>`;
     } else {
       continue;
     }
@@ -34,5 +36,5 @@ export function createSMILFile(dir: string, fileName: string, destination): void
   smil += `</switch>`;
   smil += `</body>`;
   smil += `</smil>`;
-  fs.writeFileSync(path.join(dir, `${fileName}-config.smil`), smil);
+  fs.writeFileSync(path.join(dir, `${fileName}.smil`), smil);
 }
