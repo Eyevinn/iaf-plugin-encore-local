@@ -1,5 +1,5 @@
 {
-  "externalId": "any-string",
+  "externalId": "",
   "profile": "program",
   "outputFolder": "/an/output/path/dir",
   "baseName": "any_file",

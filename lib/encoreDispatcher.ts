@@ -68,7 +68,12 @@ export class EncoreDispatcher implements TranscodeDispatcher {
   async createJobs(fileName: string): Promise<any> {
     this.logger.info(`Creating job in Encore for ${fileName}`);
     let config = this.encodeParams;
-    config["outputFolder"] = this.outputDestination;
+    const outputFolder = path.join(this.outputDestination, path.basename(fileName, path.extname(fileName)));
+    if (!fs.existsSync(outputFolder)) {
+      this.logger.info(`Creating output folder ${outputFolder}`);
+      fs.mkdirSync(outputFolder);
+    }
+    config["outputFolder"] = outputFolder;
     config["baseName"] = fileName;
     config.inputs[0]["uri"] = `${this.inputLocation}/${fileName}`;
     const url = `${this.encoreEndpoint}/encoreJobs`;
@@ -116,7 +121,7 @@ export class EncoreDispatcher implements TranscodeDispatcher {
         this.logger.info(`Job with id ${jobId} was cancelled`);
         break;
       }
-      this.logger.info(`Job with id ${jobId} Progress: ${job.progress}`);
+      this.logger.info(`Job with id ${jobId} Progress: ${job.progress}%`);
       if (job.status === "COMPLETED" || job.status === "SUCCESSFUL") {
         this.logger.info(`Job with id ${jobId} completed`);
         break;

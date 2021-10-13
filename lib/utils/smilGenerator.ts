@@ -13,7 +13,8 @@ export function getFilesByName(dir: string, fileName: string): string[] {
 }
 
 export function createSMILFile(dir: string, fileName: string): void {
-  let files: string[] = getFilesByName(dir, fileName);
+  const outputFolder = path.join(dir, path.basename(fileName, path.extname(fileName)));
+  let files: string[] = getFilesByName(outputFolder, fileName);
   let smil  = `<?xml version="1.0" encoding="UTF-8"?>`;
   smil += `<smil>`;
   smil += `<body>`;
@@ -32,5 +33,5 @@ export function createSMILFile(dir: string, fileName: string): void {
   smil += `</switch>`;
   smil += `</body>`;
   smil += `</smil>`;
-  fs.writeFileSync(path.join(dir, `${fileName}-config.smil`), smil);
+  fs.writeFileSync(path.join(outputFolder, `${fileName}-config.smil`), smil);
 }
