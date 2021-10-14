@@ -3,6 +3,7 @@ import winston from "winston";
 
 export interface IafUploadModule {
   logger: winston.Logger;
+  outputFolder: string;
   onFileAdd(filePath: string, readStream: Readable): any;
   fileUploadedDelegate: Function;
 }
@@ -25,6 +26,7 @@ export interface TranscodeDispatcher {
   getJobs(page: number, size: number): Promise<any>;
   getJob(jobId: string): Promise<any>;
   createJobs(config: {}): Promise<any>;
+  monitorJobUntilComplete(jobId: string): Promise<any>;
 }
 
 export interface FileWatcher {
