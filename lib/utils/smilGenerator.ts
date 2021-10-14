@@ -5,9 +5,7 @@ import * as path from "path";
 export function getFilesByName(dir: string, fileName: string): string[] {
   let files: string[] = [];
   fs.readdirSync(dir).forEach(file => {
-      if (file.indexOf(fileName) > -1) {
-          files.push(file);
-      }
+    files.push(file);
   });
   return files;
 }
@@ -26,7 +24,7 @@ export function createSMILFile(dir: string, fileName: string): void {
       smil += `<audio name="${file}" systemLanguage="eng" subtitleName="SURROUND"/>`;
     } else if (file.includes("STEREO")) {
       smil += `<audio name="${file}" systemLanguage="eng" subtitleName="STEREO"/>`;
-    } else if (!file.includes("thumb")) { 
+    } else if (!file.includes("thumb") && file.includes("mp4")) { 
       smil += `<video name="${file}" systemLanguage="eng" audioName="English"/>`;
     }
   }

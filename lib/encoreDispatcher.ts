@@ -74,7 +74,7 @@ export class EncoreDispatcher implements TranscodeDispatcher {
       fs.mkdirSync(outputFolder);
     }
     config["outputFolder"] = outputFolder;
-    config["baseName"] = fileName;
+    config["baseName"] = path.basename(fileName, path.extname(fileName));
     config.inputs[0]["uri"] = `${this.inputLocation}/${fileName}`;
     const url = `${this.encoreEndpoint}/encoreJobs`;
     try {
