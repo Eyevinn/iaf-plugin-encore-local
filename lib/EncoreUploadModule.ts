@@ -31,15 +31,18 @@ export class EncoreUploadModule implements IafUploadModule {
       this.dispatcher
         .monitorJobUntilComplete(result.id)
         .then((job) => {
-          if (job) {
+          if (job.status === "COMPLETED" || job.status === "SUCCESSFUL") {
+            this.logger.info(`Job ${job.id} completed successfully`);
             createSMILFile(this.outputFolder, fileName);
             this.fileUploadedDelegate(job);
           } else {
-            this.logger.error(`Job ${result.id} failed to complete Encore job`);
+            this.logger.error(`Job ${job.id} aborted with status: ${job.status} and message: ${job.message}`);
+            this.fileUploadedDelegate(null);
           }
         })
         .catch((err) => {
           this.logger.error(err);
+          this.fileUploadedDelegate(null);
         });
     });
   };
