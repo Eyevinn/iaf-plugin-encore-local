@@ -1,6 +1,6 @@
 {
   "name": "@eyevinn/iaf-plugin-encore-local",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Eyevinn Ingest Application Framework (IAF) plugin for transcode with SVT Encore",
   "main": "./dist/EncoreUploadModule.js",
   "types": "./dist/types/EncoreUploadModule.d.ts",
