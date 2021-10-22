@@ -71,7 +71,8 @@ export class EncoreDispatcher implements TranscodeDispatcher {
     const outputFolder = path.join(this.outputDestination, path.basename(fileName, path.extname(fileName)));
     if (!fs.existsSync(outputFolder)) {
       this.logger.info(`Creating output folder ${outputFolder}`);
-      fs.mkdirSync(outputFolder);
+      process.umask(0);
+      fs.mkdirSync(outputFolder, parseInt('0777', 8))
     }
     config["outputFolder"] = outputFolder;
     config["baseName"] = path.basename(fileName, path.extname(fileName));
