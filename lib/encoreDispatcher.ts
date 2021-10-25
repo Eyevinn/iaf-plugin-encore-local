@@ -109,11 +109,18 @@ export class EncoreDispatcher implements TranscodeDispatcher {
   }
 
   async monitorJobUntilComplete(jobId: string): Promise<any> {
-    const timeout = process.env.TIMEOUT ? parseInt(process.env.TIMEOUT) : 7400;
-    const timeoutAt = Date.now() + timeout * 1000;
+    const timeout = (process.env.TIMEOUT ? parseInt(process.env.TIMEOUT) : 7400) * 1000;
+    const INTERVAL = 30000;
+    let jobCompleted = false;
+    let timeoutAt = timeout;
     let job = await this.getJob(jobId);
 
-    while(timeoutAt > Date.now()) {
+    while(timeoutAt > 0) {
+      timeoutAt -= INTERVAL;
+      if (job.status === "QUEUED") {
+        this.logger.info(`Job ${jobId} is queued`);
+        timeoutAt = timeout;
+      }
       if (job.status === "FAILED") {
         this.logger.error(`Job with id ${jobId} failed`);
         break;
@@ -122,16 +129,19 @@ export class EncoreDispatcher implements TranscodeDispatcher {
         this.logger.info(`Job with id ${jobId} was cancelled`);
         break;
       }
-      this.logger.info(`Job with id ${jobId} Progress: ${job.progress}%`);
       if (job.status === "COMPLETED" || job.status === "SUCCESSFUL") {
+        jobCompleted = true;
         this.logger.info(`Job with id ${jobId} completed`);
         break;
       }
-      await new Promise(resolve => setTimeout(resolve, 30000));
+      if (job.status === "IN_PROGRESS") {
+        this.logger.info(`Job with id ${jobId} Progress: ${job.progress}%`);
+      }
+      await new Promise(resolve => setTimeout(resolve, INTERVAL));
       job = await this.getJob(jobId);
     }
-    if (Date.now() > timeoutAt) {
-      this.logger.error(`Job with id ${jobId} timed out`);
+    if (!jobCompleted) {
+      this.logger.warn(`Job with id ${jobId} timed out before completion`);
       if (process.env.CANCEL_ON_TIMEOUT) {
         await this.cancelJob(jobId);
         this.logger.error(`Job with id ${jobId} have been cancelled`);
