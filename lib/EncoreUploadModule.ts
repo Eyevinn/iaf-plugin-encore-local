@@ -1,15 +1,17 @@
 import winston from 'winston';
 import * as path from 'path';
 import { createSMILFile } from './utils/smilGenerator';
-import { IafUploadModule } from './types/interfaces';
 import { EncoreDispatcher } from './encoreDispatcher';
 import { Readable } from 'stream';
+import { IafUploadModule } from 'eyevinn-iaf';
 
 export class EncoreUploadModule implements IafUploadModule {
   logger: winston.Logger;
+  playlistName: string;
   dispatcher: EncoreDispatcher;
   outputFolder: string;
-  fileUploadedDelegate: Function;
+  fileUploadedDelegate: (result: any) => any;
+  progressDelegate: (result: any) => any;
 
   constructor(encoreEndpoint: string, ingestFolder: string, outputFolder: string, encodeParams: string, logger: winston.Logger) {
     this.logger = logger;
