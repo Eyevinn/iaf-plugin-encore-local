@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@aws-sdk/lib-storage": "^3.27.0",
+    "@types/eyevinn-iaf": "^1.0.1",
     "node-fetch": "2.6.1",
     "winston": "^3.3.3"
   }
