@@ -1,19 +1,18 @@
-import winston from 'winston';
 import * as path from 'path';
 import { createSMILFile } from './utils/smilGenerator';
 import { EncoreDispatcher } from './encoreDispatcher';
 import { Readable } from 'stream';
-import { IafUploadModule } from 'eyevinn-iaf';
+import { IafUploadModule, Logger } from 'eyevinn-iaf';
 
 export class EncoreUploadModule implements IafUploadModule {
-  logger: winston.Logger;
+  logger: Logger;
   playlistName: string;
   dispatcher: EncoreDispatcher;
   outputFolder: string;
-  fileUploadedDelegate: (result: any) => any;
+  fileUploadedDelegate: (result: any, error?: any) => any;
   progressDelegate: (result: any) => any;
 
-  constructor(encoreEndpoint: string, ingestFolder: string, outputFolder: string, encodeParams: string, logger: winston.Logger) {
+  constructor(encoreEndpoint: string, ingestFolder: string, outputFolder: string, encodeParams: string, logger: Logger) {
     this.logger = logger;
     this.outputFolder = outputFolder;
     this.dispatcher = new EncoreDispatcher(encoreEndpoint, ingestFolder, outputFolder, encodeParams, logger);
@@ -44,12 +43,12 @@ export class EncoreUploadModule implements IafUploadModule {
             this.fileUploadedDelegate(job);
           } else {
             this.logger.error(`Job ${job.id} aborted with status: ${job.status} and message: ${job.message}`);
-            this.fileUploadedDelegate(null);
+            this.fileUploadedDelegate(null, job);
           }
         })
         .catch((err) => {
           this.logger.error(err);
-          this.fileUploadedDelegate(null);
+          this.fileUploadedDelegate(null, err);
         });
     });
   };

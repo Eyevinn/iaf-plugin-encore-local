@@ -1,11 +1,11 @@
-import { Readable } from "stream";
-import winston from "winston";
+import { Readable } from 'stream';
+import { Logger } from 'eyevinn-iaf';
 
 export interface Uploader {
   destination: string;
   outputDestination: string;
   outputFiles: {};
-  logger: winston.Logger;
+  logger: Logger;
   upload(fileStream: Readable, fileName: string)
 }
 
@@ -14,7 +14,7 @@ export interface TranscodeDispatcher {
   inputLocation: string;
   outputDestination: string;
   encoreEndpoint: string;
-  logger: winston.Logger;
+  logger: Logger;
   dispatch(fileName: string): Promise<any>;
   getJobs(page: number, size: number): Promise<any>;
   getJob(jobId: string): Promise<any>;

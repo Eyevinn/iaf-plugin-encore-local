@@ -1,6 +1,6 @@
 import { TranscodeDispatcher } from './types/interfaces'
+import { Logger } from "eyevinn-iaf";
 import fetch from 'node-fetch';
-import winston from "winston";
 import * as fs from "fs";
 import * as path from "path"
 
@@ -10,9 +10,9 @@ export class EncoreDispatcher implements TranscodeDispatcher {
   inputLocation: string;
   outputDestination: string;
   encoreEndpoint: string;
-  logger: winston.Logger;
+  logger: Logger;
 
-  constructor(encoreEndpoint: string, inputLocation: string, outputDestination: string, encodeParams: string, logger: winston.Logger) {
+  constructor(encoreEndpoint: string, inputLocation: string, outputDestination: string, encodeParams: string, logger: Logger) {
     this.inputLocation = inputLocation;
     this.outputDestination = outputDestination;
     this.logger = logger;
