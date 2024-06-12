@@ -11,7 +11,6 @@ export interface Uploader {
 
 export interface TranscodeDispatcher {
   encodeParams: any;
-  inputLocation: string;
   outputDestination: string;
   encoreEndpoint: string;
   logger: Logger;

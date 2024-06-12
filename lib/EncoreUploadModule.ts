@@ -1,21 +1,26 @@
-import * as path from 'path';
-import { createSMILFile } from './utils/smilGenerator';
-import { EncoreDispatcher } from './encoreDispatcher';
-import { Readable } from 'stream';
-import { IafUploadModule, Logger } from 'eyevinn-iaf';
+import {createSMILFile} from './utils/smilGenerator';
+import {EncoreDispatcher, EncoreDispatcherOptions} from './encoreDispatcher';
+import {Readable} from 'stream';
+import {IafUploadModule, Logger} from 'eyevinn-iaf';
+
+export interface EncoreUploadModuleOptions extends EncoreDispatcherOptions {
+  generateSmilFile?: boolean;
+}
 
 export class EncoreUploadModule implements IafUploadModule {
   logger: Logger;
   playlistName: string;
   dispatcher: EncoreDispatcher;
   outputFolder: string;
+  generateSmilFile?: boolean;
   fileUploadedDelegate: (result: any, error?: any) => any;
   progressDelegate: (result: any) => any;
 
-  constructor(encoreEndpoint: string, ingestFolder: string, outputFolder: string, encodeParams: string, logger: Logger) {
-    this.logger = logger;
-    this.outputFolder = outputFolder;
-    this.dispatcher = new EncoreDispatcher(encoreEndpoint, ingestFolder, outputFolder, encodeParams, logger);
+  constructor(opts: EncoreUploadModuleOptions) {
+    this.logger = opts.logger;
+    this.outputFolder = opts.outputDestination;
+    this.dispatcher = new EncoreDispatcher(opts);
+    this.generateSmilFile = opts.generateSmilFile;
   }
 
   /**
@@ -27,10 +32,9 @@ export class EncoreUploadModule implements IafUploadModule {
    */
   onFileAdd = (filePath: string, readStream: Readable) => {
     this.logger.info(`File added: ${filePath}`);
-    const fileName = path.basename(filePath);
-    this.dispatcher.dispatch(fileName).then((result) => {
+    this.dispatcher.dispatch(filePath).then((result) => {
       if (!result) {
-        this.logger.error(`Error dispatching job for ${fileName}`);
+        this.logger.error(`Error dispatching job for ${filePath}`);
         this.fileUploadedDelegate(null);
         return;
       }
@@ -39,16 +43,18 @@ export class EncoreUploadModule implements IafUploadModule {
         .then((job) => {
           if (job.status === "COMPLETED" || job.status === "SUCCESSFUL") {
             this.logger.info(`Job ${job.id} completed successfully`);
-            createSMILFile(this.outputFolder, fileName);
-            this.fileUploadedDelegate(job);
+            if (this.generateSmilFile) {
+              createSMILFile(job.outputFolder, filePath);
+            }
+            this.fileUploadedDelegate?.(job);
           } else {
             this.logger.error(`Job ${job.id} aborted with status: ${job.status} and message: ${job.message}`);
-            this.fileUploadedDelegate(null, job);
+            this.fileUploadedDelegate?.(null, job);
           }
         })
         .catch((err) => {
           this.logger.error(err);
-          this.fileUploadedDelegate(null, err);
+          this.fileUploadedDelegate?.(null, err);
         });
     });
   };
