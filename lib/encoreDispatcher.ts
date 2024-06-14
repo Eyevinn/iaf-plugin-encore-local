@@ -67,6 +67,10 @@ export class EncoreDispatcher implements TranscodeDispatcher {
           "Content-Type": "application/json",
         }
       });
+      if (!resp.ok) {
+        this.logger.error(`Failed to get job from Encore for ${jobId}: status ${resp.status}`);
+        return;
+      }
       return resp.json();
     } catch (err) {
       this.logger.error(err);
@@ -77,7 +81,7 @@ export class EncoreDispatcher implements TranscodeDispatcher {
     this.logger.info(`Creating job in Encore for ${inputUri}`);
     let config = this.encodeParams;
     config.jobId = randomUUID();
-    const outputFolder = path.join(this.outputDestination, config.jobId, path.basename(inputUri, path.extname(inputUri)));
+    const outputFolder = path.join(this.outputDestination, config.jobId);
 
     if (this.createOutputFolder && !fs.existsSync(outputFolder)) {
       this.logger.info(`Creating output folder ${outputFolder}`);
