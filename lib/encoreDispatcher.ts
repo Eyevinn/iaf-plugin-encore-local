@@ -3,33 +3,41 @@ import { Logger } from "eyevinn-iaf";
 import fetch from 'node-fetch';
 import * as fs from "fs";
 import * as path from "path"
+import {randomUUID} from "node:crypto";
 
+export interface EncoreDispatcherOptions {
+  encoreEndpoint: string;
+  outputDestination: string;
+  encodeParams: string|object;
+  logger: Logger;
+  createOutputFolder?: boolean;
+}
 
 export class EncoreDispatcher implements TranscodeDispatcher {
   encodeParams: any;
-  inputLocation: string;
   outputDestination: string;
   encoreEndpoint: string;
   logger: Logger;
+  createOutputFolder?: boolean;
 
-  constructor(encoreEndpoint: string, inputLocation: string, outputDestination: string, encodeParams: string, logger: Logger) {
-    this.inputLocation = inputLocation;
-    this.outputDestination = outputDestination;
-    this.logger = logger;
-    if (encoreEndpoint.endsWith('/')) {
-      this.encoreEndpoint = encoreEndpoint.slice(0, -1);
+  constructor(opts: EncoreDispatcherOptions) {
+    this.outputDestination = opts.outputDestination;
+    this.logger = opts.logger;
+    if (opts.encoreEndpoint.endsWith('/')) {
+      this.encoreEndpoint = opts.encoreEndpoint.slice(0, -1);
     } else {
-      this.encoreEndpoint = encoreEndpoint;
+      this.encoreEndpoint = opts.encoreEndpoint;
     }
-    if (encodeParams) {
-      this.encodeParams = JSON.parse(encodeParams);
+    if (typeof opts.encodeParams === 'string') {
+      this.encodeParams = JSON.parse(opts.encodeParams);
     } else {
-      this.encodeParams = this.loadEncodeParams(path.join(__dirname,"..","resources", "exampleJob.json"));
+      this.encodeParams = opts.encodeParams;
     }
+    this.createOutputFolder = opts.createOutputFolder;
   }
 
-  async dispatch(fileName: string): Promise<any> {
-    const resp = await this.createJobs(fileName);
+  async dispatch(inputUri: string): Promise<any> {
+    const resp = await this.createJobs(inputUri);
     return resp;
   }
 
@@ -59,24 +67,34 @@ export class EncoreDispatcher implements TranscodeDispatcher {
           "Content-Type": "application/json",
         }
       });
+      if (!resp.ok) {
+        this.logger.error(`Failed to get job from Encore for ${jobId}: status ${resp.status}`);
+        return;
+      }
       return resp.json();
     } catch (err) {
       this.logger.error(err);
     }
   }
 
-  async createJobs(fileName: string): Promise<any> {
-    this.logger.info(`Creating job in Encore for ${fileName}`);
+  async createJobs(inputUri: string): Promise<any> {
+    this.logger.info(`Creating job in Encore for ${inputUri}`);
     let config = this.encodeParams;
-    const outputFolder = path.join(this.outputDestination, path.basename(fileName, path.extname(fileName)));
-    if (!fs.existsSync(outputFolder)) {
+    config.jobId = randomUUID();
+    const outputFolder = path.join(this.outputDestination, config.jobId);
+
+    if (this.createOutputFolder && !fs.existsSync(outputFolder)) {
       this.logger.info(`Creating output folder ${outputFolder}`);
       process.umask(0);
       fs.mkdirSync(outputFolder, parseInt('0777', 8))
     }
-    config["outputFolder"] = outputFolder;
-    config["baseName"] = path.basename(fileName, path.extname(fileName));
-    config.inputs[0]["uri"] = `${this.inputLocation}/${fileName}`;
+
+    config.outputFolder = outputFolder;
+    config.baseName = path.basename(inputUri, path.extname(inputUri));
+    config.inputs = [ {
+      uri: inputUri,
+      type: "AudioVideo"
+    } ];
     const url = `${this.encoreEndpoint}/encoreJobs`;
     try {
       const resp = await fetch(url, {
@@ -86,9 +104,15 @@ export class EncoreDispatcher implements TranscodeDispatcher {
         },
         body: JSON.stringify(config)
       });
+      if (!resp.ok) {
+        this.logger.error(`Failed to create job in Encore for ${inputUri}: status ${resp.status}`);
+        this.logger.error(`Response: ${await resp.text()}`);
+        throw new Error(`Failed to create job in Encore for ${inputUri}: status ${resp.status}`);
+      }
       return resp.json();
     } catch (err) {
       this.logger.error(err);
+      throw err;
     }
   }
 

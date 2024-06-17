@@ -11,7 +11,7 @@ export function getFilesByName(dir: string, fileName: string): string[] {
 }
 
 export function createSMILFile(dir: string, fileName: string): void {
-  const outputFolder = path.join(dir, path.basename(fileName, path.extname(fileName)));
+  const outputFolder = dir;
   let files: string[] = getFilesByName(outputFolder, fileName);
   let content  = `<?xml version="1.0" encoding="UTF-8"?>`;
   content += `<smil>`;
