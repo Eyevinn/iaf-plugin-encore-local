@@ -11,6 +11,7 @@ export interface EncoreDispatcherOptions {
   encodeParams: string|object;
   logger: Logger;
   createOutputFolder?: boolean;
+  jobCustomizer?: (job: any) => any;
 }
 
 export class EncoreDispatcher implements TranscodeDispatcher {
@@ -19,6 +20,7 @@ export class EncoreDispatcher implements TranscodeDispatcher {
   encoreEndpoint: string;
   logger: Logger;
   createOutputFolder?: boolean;
+  jobCustomizer?: (job: any) => any;
 
   constructor(opts: EncoreDispatcherOptions) {
     this.outputDestination = opts.outputDestination;
@@ -34,6 +36,7 @@ export class EncoreDispatcher implements TranscodeDispatcher {
       this.encodeParams = opts.encodeParams;
     }
     this.createOutputFolder = opts.createOutputFolder;
+    this.jobCustomizer = opts.jobCustomizer;
   }
 
   async dispatch(inputUri: string): Promise<any> {
@@ -96,13 +99,14 @@ export class EncoreDispatcher implements TranscodeDispatcher {
       type: "AudioVideo"
     } ];
     const url = `${this.encoreEndpoint}/encoreJobs`;
+    const job = this.jobCustomizer ? this.jobCustomizer(config) : config;
     try {
       const resp = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(config)
+        body: JSON.stringify(job)
       });
       if (!resp.ok) {
         this.logger.error(`Failed to create job in Encore for ${inputUri}: status ${resp.status}`);
