@@ -80,8 +80,8 @@ export class EncoreDispatcher implements TranscodeDispatcher {
   async createJobs(inputUri: string): Promise<any> {
     this.logger.info(`Creating job in Encore for ${inputUri}`);
     let config = this.encodeParams;
-    config.jobId = randomUUID();
-    const outputFolder = path.join(this.outputDestination, config.jobId);
+    config.id = randomUUID();
+    const outputFolder = path.join(this.outputDestination, config.id);
 
     if (this.createOutputFolder && !fs.existsSync(outputFolder)) {
       this.logger.info(`Creating output folder ${outputFolder}`);
