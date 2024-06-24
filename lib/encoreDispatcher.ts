@@ -12,6 +12,10 @@ export interface EncoreDispatcherOptions {
   logger: Logger;
   createOutputFolder?: boolean;
   jobCustomizer?: (job: any) => any;
+  encoreAuth?: {
+    username: string;
+    password: string;
+  }
 }
 
 export class EncoreDispatcher implements TranscodeDispatcher {
@@ -21,6 +25,10 @@ export class EncoreDispatcher implements TranscodeDispatcher {
   logger: Logger;
   createOutputFolder?: boolean;
   jobCustomizer?: (job: any) => any;
+  encoreAuth?: {
+    username: string;
+    password: string;
+  }
 
   constructor(opts: EncoreDispatcherOptions) {
     this.outputDestination = opts.outputDestination;
@@ -37,6 +45,7 @@ export class EncoreDispatcher implements TranscodeDispatcher {
     }
     this.createOutputFolder = opts.createOutputFolder;
     this.jobCustomizer = opts.jobCustomizer;
+    this.encoreAuth = opts.encoreAuth;
   }
 
   async dispatch(inputUri: string): Promise<any> {
@@ -44,14 +53,22 @@ export class EncoreDispatcher implements TranscodeDispatcher {
     return resp;
   }
 
+  authHeader() {
+    return this.encoreAuth ? {
+      "Authorization": "Basic " + Buffer.from(`${this.encoreAuth.username}:${this.encoreAuth.password}`).toString("base64")
+    } : {};
+  }
+
   async getJobs(page: number, size: number): Promise<any> {
     this.logger.info("Fetching jobs from Encore");
     const url = `${this.encoreEndpoint}/encoreJobs?page=${page}&size=${size}`;
+    const authHeader = this.authHeader();
     try {
       const resp = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          ...authHeader
         }
       });
       return resp.json();
@@ -68,6 +85,7 @@ export class EncoreDispatcher implements TranscodeDispatcher {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          ...this.authHeader()
         }
       });
       if (!resp.ok) {
@@ -105,6 +123,7 @@ export class EncoreDispatcher implements TranscodeDispatcher {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...this.authHeader()
         },
         body: JSON.stringify(job)
       });
@@ -128,6 +147,7 @@ export class EncoreDispatcher implements TranscodeDispatcher {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...this.authHeader()
         }
       });
       return resp.json();
