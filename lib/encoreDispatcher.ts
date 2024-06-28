@@ -102,16 +102,16 @@ export class EncoreDispatcher implements TranscodeDispatcher {
     this.logger.info(`Creating job in Encore for ${inputUri}`);
     let config = this.encodeParams;
     config.id = randomUUID();
-    const outputFolder = path.join(this.outputDestination, config.id);
+    config.baseName = path.basename(inputUri, path.extname(inputUri));
+    const outputFolder = path.join(this.outputDestination, config.baseName, config.id);
 
     if (this.createOutputFolder && !fs.existsSync(outputFolder)) {
       this.logger.info(`Creating output folder ${outputFolder}`);
       process.umask(0);
-      fs.mkdirSync(outputFolder, parseInt('0777', 8))
+      fs.mkdirSync(outputFolder, {recursive: true, mode: parseInt('0755', 8)})
     }
 
     config.outputFolder = outputFolder;
-    config.baseName = path.basename(inputUri, path.extname(inputUri));
     config.inputs = [ {
       uri: inputUri,
       type: "AudioVideo"
